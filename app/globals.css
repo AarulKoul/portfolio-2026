@@ -1,26 +1,230 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #0d0c0a;
+  --ink-raised: #151310;
+  --bone: #eae5d9;
+  --bone-dim: #8f887a;
+  --ember: #ff4d00;
+  --line: rgba(234, 229, 217, 0.14);
+  --ease-press: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-ink-raised: var(--ink-raised);
+  --color-bone: var(--bone);
+  --color-bone-dim: var(--bone-dim);
+  --color-ember: var(--ember);
+  --color-line: var(--line);
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-archivo), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+}
+
+/* Film grain over everything — the "printed page" texture */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--ember);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 1px solid var(--ember);
+  outline-offset: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+::-webkit-scrollbar-thumb {
+  background: #2b2822;
+  border: 2px solid var(--ink);
+}
+
+/* ---------------------------------------------------------------- */
+/* Motion system: everything settles into place like set type.      */
+/* ---------------------------------------------------------------- */
+
+/* Scroll-triggered reveal (class added by <Reveal>) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s var(--ease-press),
+    transform 0.9s var(--ease-press);
+  transition-delay: var(--d, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Load-time masked line rise (hero) */
+.mask {
+  display: block;
+  overflow: hidden;
+}
+.mask > * {
+  display: block;
+  transform: translateY(110%);
+  animation: rise 1.1s var(--ease-press) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes rise {
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Load-time fade (hero metadata) */
+.fade-in {
+  opacity: 0;
+  animation: appear 1.2s var(--ease-press) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Stack marquee */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+
+/* Schematic figures draw themselves in when revealed */
+.figure path,
+.figure line,
+.figure rect,
+.figure circle,
+.figure ellipse,
+.figure polyline {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.8s var(--ease-press) 0.25s;
+}
+.is-visible .figure path,
+.is-visible .figure line,
+.is-visible .figure rect,
+.is-visible .figure circle,
+.is-visible .figure ellipse,
+.is-visible .figure polyline {
+  stroke-dashoffset: 0;
+}
+.figure .dot {
+  stroke: none;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-press) 1.1s;
+}
+.is-visible .figure .dot {
+  opacity: 1;
+}
+
+/* Underline that sweeps in from the left on hover */
+.link-rule {
+  position: relative;
+}
+.link-rule::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease-press);
+}
+.link-rule:hover::after,
+.link-rule:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Outlined display type (hero surname) */
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--bone);
+}
+
+/* Availability pulse */
+@keyframes beat {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+.beat {
+  animation: beat 2.4s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------- */
+/* Reduced motion: the page arrives fully set, nothing moves.       */
+/* ---------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .mask > *,
+  .fade-in {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .marquee-track {
+    animation: none;
+  }
+  .beat {
+    animation: none;
+  }
+  .figure path,
+  .figure line,
+  .figure rect,
+  .figure circle,
+  .figure ellipse,
+  .figure polyline,
+  .figure .dot {
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
 }
