@@ -1,38 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Fraunces, JetBrains_Mono } from "next/font/google";
+import { Geist_Mono, Inter_Tight } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz"],
-});
-
-const archivo = Archivo({
-  variable: "--font-archivo",
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
   subsets: ["latin"],
 });
 
-const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "Aarul Koul — Software Engineer",
   description:
-    "Software Development Engineer in Pune, India. Building SaaS platforms with Next.js, React, and TypeScript — with a data engineer's habit of measuring everything. Vol. 01 of the engineering record.",
+    "Frontend engineer in Pune, India — building SaaS platforms with Next.js, React, and TypeScript, with a data engineer's reflexes. Currently SDE at Borderline Genius.",
   openGraph: {
     title: "Aarul Koul — Software Engineer",
     description:
-      "An engineering journal: SaaS platforms in Next.js, million-row datasets, and interfaces set with editorial care.",
+      "Frontend engineer building SaaS in Next.js — design-grade on the surface, engineering-grade underneath.",
     type: "website",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0d0c0a",
+  themeColor: "#f2f0ea",
 };
 
 export default function RootLayout({
@@ -43,9 +36,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${archivo.variable} ${jetbrains.variable} h-full antialiased`}
+      className={`${interTight.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-ink text-bone">{children}</body>
+      <body className="min-h-full bg-paper text-ink">{children}</body>
     </html>
   );
 }

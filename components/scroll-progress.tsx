@@ -32,7 +32,7 @@ export default function ScrollProgress() {
     <div
       ref={ref}
       aria-hidden
-      className="absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-ember"
+      className="absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-blue"
     />
   );
 }

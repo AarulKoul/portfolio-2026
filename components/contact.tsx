@@ -4,39 +4,35 @@ import Reveal from "./reveal";
 
 export default function Contact() {
   return (
-    <footer id="contact" className="mt-24 border-t border-line px-5 md:mt-36 md:px-10">
-      <div className="py-20 md:py-28">
+    <footer id="contact" className="bg-ink text-paper">
+      <div className="px-5 py-24 md:px-10 md:py-36">
         <Reveal>
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-ember">
-            SEC. 05 — Correspondence
+          <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-paper/50">
+            <span className="text-blue">06</span> — Contact
           </p>
-          <h2 className="mt-6 max-w-4xl font-serif text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.02] tracking-tight">
-            Let&apos;s set something{" "}
-            <em className="italic">worth reading twice.</em>
+          <h2 className="mt-10 text-[clamp(3.5rem,13vw,13rem)] font-extrabold leading-[0.86] tracking-[-0.05em]">
+            LET&apos;S
+            <br />
+            BUILD<span className="text-blue">.</span>
           </h2>
         </Reveal>
 
         <Reveal delay={150}>
           <a
             href={`mailto:${identity.email}`}
-            className="group mt-14 inline-block break-all font-serif text-[clamp(1.4rem,4.5vw,3.25rem)] italic leading-none tracking-tight md:mt-20"
+            className="mt-14 inline-block break-all text-[clamp(1.3rem,3.5vw,2.6rem)] font-medium tracking-[-0.02em] transition-colors duration-400 hover:text-blue md:mt-20"
           >
-            <span className="transition-colors duration-500 group-hover:text-ember">
-              {identity.email}
-            </span>
-            <span className="ml-3 inline-block text-ember transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1">
-              ↗
-            </span>
+            {identity.email} <span aria-hidden>↗</span>
           </a>
         </Reveal>
 
         <Reveal delay={250}>
-          <div className="mt-14 flex flex-wrap gap-x-10 gap-y-4 md:mt-20">
+          <div className="mt-16 grid gap-y-4 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/50 sm:grid-cols-2 lg:grid-cols-4 md:mt-24">
             <a
               href={identity.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="link-rule font-mono text-[11px] uppercase tracking-[0.22em] text-bone-dim transition-colors duration-300 hover:text-bone"
+              className="link-rule w-fit transition-colors duration-300 hover:text-paper"
             >
               GitHub ↗
             </a>
@@ -44,25 +40,25 @@ export default function Contact() {
               href={identity.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="link-rule font-mono text-[11px] uppercase tracking-[0.22em] text-bone-dim transition-colors duration-300 hover:text-bone"
+              className="link-rule w-fit transition-colors duration-300 hover:text-paper"
             >
               LinkedIn ↗
             </a>
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-bone-dim">
-              Currently — SDE @ Borderline Genius
+            <p className="flex items-center gap-2">
+              <span className="beat inline-block size-1.5 rounded-full bg-blue" />
+              Open to work
+            </p>
+            <p className="lg:text-right">
+              <LocalTime />
             </p>
           </div>
         </Reveal>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-line py-6 font-mono text-[10px] uppercase tracking-[0.2em] text-bone-dim md:flex-row md:items-center md:justify-between">
-        <p>© 2026 Aarul Koul — Engineering Journal, Vol. 01</p>
-        <p className="hidden lg:block">
-          Set in Fraunces, Archivo & JetBrains Mono
-        </p>
-        <p>
-          <LocalTime />
-        </p>
+      <div className="flex flex-col gap-2 border-t border-rule-inv px-5 py-6 font-mono text-[10px] uppercase tracking-[0.18em] text-paper/40 md:flex-row md:items-center md:justify-between md:px-10">
+        <p>© 2026 Aarul Koul</p>
+        <p className="hidden lg:block">Set in Inter Tight & Geist Mono</p>
+        <p>Built with Next.js 16 — no animation libraries</p>
       </div>
     </footer>
   );

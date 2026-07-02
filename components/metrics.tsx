@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { stats, type Stat } from "@/lib/data";
 import Reveal from "./reveal";
-import SectionHeading from "./section-heading";
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
@@ -39,7 +38,7 @@ function StatValue({ stat }: { stat: Stat }) {
         if (!entry.isIntersecting) return;
         observer.disconnect();
         const start = performance.now();
-        const duration = 1800;
+        const duration = 1600;
         const step = (now: number) => {
           const t = Math.min((now - start) / duration, 1);
           setDisplay(format(stat.value * easeOutExpo(t), stat.kind));
@@ -59,7 +58,7 @@ function StatValue({ stat }: { stat: Stat }) {
   return (
     <span ref={ref} className="tabular-nums">
       {stat.kind === "decimal-percent" && (
-        <span className="mr-3 align-middle font-mono text-sm uppercase tracking-[0.3em] text-bone-dim md:text-base">
+        <span className="mr-2 align-[0.5em] font-mono text-xs uppercase tracking-[0.25em] text-ink-soft md:text-sm">
           Top
         </span>
       )}
@@ -68,37 +67,24 @@ function StatValue({ stat }: { stat: Stat }) {
   );
 }
 
-export default function Figures() {
+export default function Metrics() {
   return (
-    <section id="figures" className="px-5 pt-24 md:px-10 md:pt-36">
-      <SectionHeading
-        index="03"
-        title="The Figures"
-        note="Measured, not estimated"
-      />
-
-      <Reveal>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="flex h-full flex-col justify-between gap-10 border-b border-line py-12 lg:border-r lg:px-8 lg:first:pl-0 lg:last:border-r-0"
-            >
-              <p className="font-mono text-xs tracking-[0.3em] text-ember">
-                {stat.label}
-              </p>
-              <div>
-                <p className="font-serif text-[clamp(3.25rem,7vw,5.5rem)] leading-none tracking-tight">
-                  <StatValue stat={stat} />
-                </p>
-                <p className="mt-6 max-w-[26ch] text-sm leading-relaxed text-bone-dim">
-                  {stat.caption}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Reveal>
-    </section>
+    <Reveal>
+      <div className="grid gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="border-l border-rule pl-6">
+            <p className="font-mono text-[11px] tracking-[0.25em] text-blue">
+              {stat.label}
+            </p>
+            <p className="mt-6 text-[clamp(2.75rem,5.5vw,5rem)] font-extrabold leading-none tracking-[-0.04em]">
+              <StatValue stat={stat} />
+            </p>
+            <p className="mt-5 max-w-[24ch] text-sm leading-relaxed text-ink-soft">
+              {stat.caption}
+            </p>
+          </div>
+        ))}
+      </div>
+    </Reveal>
   );
 }
