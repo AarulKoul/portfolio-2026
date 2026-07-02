@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import RollLabel from "./roll-label";
 import ScrollProgress from "./scroll-progress";
 
 const links = [
@@ -7,9 +11,50 @@ const links = [
   { label: "Contact", href: "#contact" },
 ];
 
+/**
+ * The header retreats while reading (scroll down) and returns when
+ * summoned (scroll up); the active section is tracked and marked blue.
+ */
 export default function Header() {
+  const [hidden, setHidden] = useState(false);
+  const [active, setActive] = useState("");
+
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y < 120) setHidden(false);
+      else if (y > last + 6) setHidden(true);
+      else if (y < last - 6) setHidden(false);
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+    );
+    links.forEach((link) => {
+      const target = document.querySelector(link.href);
+      if (target) observer.observe(target);
+    });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-rule bg-paper/85 backdrop-blur-md">
+    <header
+      className={`site-header fixed inset-x-0 top-0 z-50 border-b border-rule bg-paper/85 backdrop-blur-md ${
+        hidden ? "hidden-bar" : ""
+      }`}
+    >
       <div className="flex items-center justify-between px-5 py-4 md:px-10">
         <a
           href="#top"
@@ -24,9 +69,13 @@ export default function Header() {
             <a
               key={link.href}
               href={link.href}
-              className="link-rule whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-ink-soft transition-colors duration-300 hover:text-ink"
+              className={`whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] transition-colors duration-300 ${
+                active === link.href
+                  ? "text-blue"
+                  : "text-ink-soft hover:text-ink"
+              }`}
             >
-              {link.label}
+              <RollLabel text={link.label} />
             </a>
           ))}
         </nav>

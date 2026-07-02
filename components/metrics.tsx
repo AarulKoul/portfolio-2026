@@ -69,10 +69,14 @@ function StatValue({ stat }: { stat: Stat }) {
 
 export default function Metrics() {
   return (
-    <Reveal>
+    <Reveal variant="group">
       <div className="grid gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="border-l border-rule pl-6">
+        {stats.map((stat, i) => (
+          <div
+            key={stat.label}
+            className="sk border-l border-rule pl-6"
+            style={{ "--i": i } as React.CSSProperties}
+          >
             <p className="font-mono text-[11px] tracking-[0.25em] text-blue">
               {stat.label}
             </p>

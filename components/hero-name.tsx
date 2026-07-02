@@ -83,7 +83,7 @@ export default function HeroName() {
         >
           <span
             className="block text-[clamp(4.5rem,16vw,15.5rem)] leading-[0.86] tracking-[-0.045em]"
-            style={{ "--d": `${150 + lineIndex * 130}ms` } as CSSProperties}
+            style={{ "--d": `${650 + lineIndex * 140}ms` } as CSSProperties}
           >
             {line.split("").map((char, i) => (
               <span

@@ -54,8 +54,23 @@ body {
 }
 
 /* ---------------------------------------------------------------- */
-/* Motion system — precise, weighted, never decorative.             */
+/* Motion system                                                     */
+/* One easing curve, transform/opacity only, everything purposeful.  */
 /* ---------------------------------------------------------------- */
+
+/* Page entrance: an ink curtain lifts off the paper */
+.curtain {
+  animation: curtain-lift 0.85s var(--ease-out) 0.25s both;
+}
+@keyframes curtain-lift {
+  to {
+    transform: translateY(-101%);
+  }
+}
+.curtain-label {
+  opacity: 0;
+  animation: appear 0.4s ease 0.05s both;
+}
 
 /* Scroll-triggered reveal (class added by <Reveal>) */
 .reveal {
@@ -72,6 +87,21 @@ body {
   opacity: 1;
   transform: none;
   filter: none;
+}
+
+/* Group choreography: the parent observes, the children stagger.   */
+/* Used where a plain fade would be repetitive (grids, lists).      */
+.reveal-group .sk {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.75s var(--ease-out),
+    transform 0.75s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+.reveal-group.is-visible .sk {
+  opacity: 1;
+  transform: none;
 }
 
 /* Load-time masked line rise (hero) */
@@ -120,6 +150,57 @@ body {
   transform: translateY(0);
 }
 
+/* Scroll-triggered letter-by-letter rise (class toggled by <Letters>) */
+.chars .line {
+  display: block;
+  overflow: hidden;
+}
+.chars .c {
+  display: inline-block;
+  transform: translateY(115%);
+  transition: transform 0.9s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 34ms);
+}
+.chars.is-visible .c {
+  transform: translateY(0);
+}
+
+/* Pinned statement: words ignite as scroll advances (Brief) */
+.st-word {
+  display: inline-block;
+  margin-right: 0.27em;
+  color: color-mix(in srgb, var(--ink) 15%, transparent);
+  transition:
+    color 0.35s ease,
+    background-color 0.35s ease;
+}
+.st-word.on {
+  color: var(--ink);
+}
+.st-word.hl-w {
+  padding: 0 0.1em;
+}
+.st-word.hl-w.on {
+  background: var(--blue);
+  color: var(--paper);
+}
+
+/* Changelog: a line draws through the career as you scroll */
+.clog-line {
+  transform-origin: top;
+}
+.clog-dot {
+  transform: translateX(-50%) scale(0.4);
+  opacity: 0.35;
+  transition:
+    transform 0.4s var(--ease-out),
+    opacity 0.4s var(--ease-out);
+}
+.clog-dot.on {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
 /* Permanently "selected" text — the highlight is the emphasis */
 .hl {
   background: var(--blue);
@@ -144,7 +225,7 @@ body {
   animation: blink 1.1s steps(1) infinite;
 }
 
-/* Accordion expansion for the work index */
+/* Accordion expansion + content settle for the work index */
 .acc-panel {
   display: grid;
   grid-template-rows: 0fr;
@@ -155,6 +236,87 @@ body {
 }
 .acc-panel > div {
   overflow: hidden;
+}
+.acc-inner {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s var(--ease-out) 0.12s,
+    transform 0.5s var(--ease-out) 0.12s;
+}
+.acc-panel.open .acc-inner {
+  opacity: 1;
+  transform: none;
+}
+
+/* Rolling label: the resting label exits up, its twin arrives */
+.roll {
+  display: inline-block;
+  overflow: hidden;
+}
+.roll-inner {
+  position: relative;
+  display: block;
+  transition: transform 0.45s var(--ease-out);
+}
+.roll-inner > span {
+  display: block;
+}
+.roll-inner > span:nth-child(2) {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+a:hover .roll-inner,
+button:hover .roll-inner,
+.group:hover .roll-inner {
+  transform: translateY(-100%);
+}
+
+/* Diagonal arrow swap: the arrow leaves the way it points */
+.arrow-swap {
+  position: relative;
+  display: inline-block;
+  width: 0.72em;
+  height: 0.72em;
+  overflow: hidden;
+}
+.arrow-swap svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s var(--ease-out);
+}
+.arrow-swap svg:nth-child(2) {
+  transform: translate(-110%, 110%);
+}
+a:hover .arrow-swap svg:first-child,
+.group:hover .arrow-swap svg:first-child {
+  transform: translate(110%, -110%);
+}
+a:hover .arrow-swap svg:nth-child(2),
+.group:hover .arrow-swap svg:nth-child(2) {
+  transform: translate(0, 0);
+}
+
+/* Section rules draw themselves across the page */
+.draw-rule path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.6s var(--ease-out);
+}
+.draw-rule.is-visible path {
+  stroke-dashoffset: 0;
+}
+
+/* Ghost section numerals (parallax background wayfinding) */
+.numeral {
+  font-weight: 800;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--rule);
 }
 
 /* Underline that sweeps in from the left on hover */
@@ -179,7 +341,28 @@ body {
   transform-origin: left;
 }
 
-/* Availability pulse */
+/* Header retreats while reading, returns when summoned */
+.site-header {
+  transition: transform 0.5s var(--ease-out);
+}
+.site-header.hidden-bar {
+  transform: translateY(-100%);
+}
+
+/* Scroll cue drifts, availability pulses */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+.drift {
+  display: inline-block;
+  animation: drift 2.2s ease-in-out infinite;
+}
 @keyframes beat {
   0%,
   100% {
@@ -195,29 +378,63 @@ body {
 
 /* ---------------------------------------------------------------- */
 /* Reduced motion: the page arrives fully set, nothing moves.       */
+/* JS-driven motion (parallax, magnetic, kinetic name, pinned       */
+/* statement, changelog line) bails out via matchMedia.             */
 /* ---------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+  .curtain {
+    display: none;
+  }
   .reveal,
   .mask > *,
-  .fade-in {
+  .fade-in,
+  .reveal-group .sk,
+  .acc-inner {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
     animation: none !important;
     transition: none !important;
   }
-  .words .w > span {
+  .words .w > span,
+  .chars .c {
     transform: none !important;
     transition: none !important;
   }
+  .st-word {
+    color: var(--ink);
+    transition: none;
+  }
+  .st-word.hl-w {
+    background: var(--blue);
+    color: var(--paper);
+  }
+  .clog-dot {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+    transition: none;
+  }
+  .draw-rule path {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
+  .roll-inner,
+  .arrow-swap svg {
+    transition: none !important;
+  }
   .caret,
-  .beat {
+  .beat,
+  .drift {
     animation: none;
   }
   .acc-panel {
     transition: none;
+  }
+  .site-header {
+    transition: none;
+    transform: none !important;
   }
 }
