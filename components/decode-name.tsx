@@ -125,7 +125,7 @@ export default function DecodeName() {
               </span>
             ))}
             {lineIndex === 1 && (
-              <span className="caret ml-24 inline-block h-[0.74em] w-[0.03em] bg-blue" />
+              <span className="caret ml-8 md:ml-24 inline-block h-[0.74em] w-[0.03em] bg-blue" />
             )}
           </span>
         </span>
