@@ -1,40 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f2f0ea;
-  --ink: #131210;
-  --ink-soft: #6f6b62;
-  --rule: rgba(19, 18, 16, 0.14);
-  --rule-inv: rgba(242, 240, 234, 0.18);
-  --blue: #2733ff;
+  --void: #07080d;
+  --panel: #0e1118;
+  --fg: #e9ecf5;
+  --muted: #8d93a6;
+  --line: rgba(148, 158, 190, 0.14);
+  --blue: #5b7bfa;
+  --cyan: #67e8f9;
+  --violet: #a78bfa;
   --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 @theme inline {
-  --color-paper: var(--paper);
-  --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-rule: var(--rule);
-  --color-rule-inv: var(--rule-inv);
+  --color-void: var(--void);
+  --color-panel: var(--panel);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
   --color-blue: var(--blue);
+  --color-cyan: var(--cyan);
+  --color-violet: var(--violet);
   --font-sans: var(--font-inter-tight), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--void);
+  color: var(--fg);
   font-family: var(--font-inter-tight), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Film grain above everything — kills flat-gradient banding */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 ::selection {
   background: var(--blue);
-  color: var(--paper);
+  color: var(--void);
 }
 
 :focus-visible {
@@ -46,15 +61,35 @@ body {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--paper);
+  background: var(--void);
 }
 ::-webkit-scrollbar-thumb {
-  background: #c9c5bb;
-  border: 2px solid var(--paper);
+  background: #232838;
+  border: 2px solid var(--void);
 }
 
 /* ---------------------------------------------------------------- */
-/* Motion system — precise, weighted, never decorative.             */
+/* Environment                                                       */
+/* ---------------------------------------------------------------- */
+
+/* Blueprint grid — the drafting table under everything */
+.blueprint {
+  background-image:
+    linear-gradient(to right, rgba(148, 158, 190, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 158, 190, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Aurora blobs (positioned + drifted by Atmosphere via GSAP) */
+.aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+}
+
+/* ---------------------------------------------------------------- */
+/* Motion vocabulary                                                 */
 /* ---------------------------------------------------------------- */
 
 /* Scroll-triggered reveal (class added by <Reveal>) */
@@ -74,7 +109,7 @@ body {
   filter: none;
 }
 
-/* Load-time masked line rise (hero) */
+/* Load-time masked line rise */
 .mask {
   display: block;
   overflow: hidden;
@@ -91,7 +126,7 @@ body {
   }
 }
 
-/* Load-time fade (hero metadata) */
+/* Load-time fade */
 .fade-in {
   opacity: 0;
   animation: appear 1.1s var(--ease-out) both;
@@ -103,30 +138,12 @@ body {
   }
 }
 
-/* Scroll-triggered word-by-word rise (class toggled by <Words>) */
-.words .w {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-  margin-right: 0.26em;
+/* Pipeline statement: words ignite as the scene plays */
+.pw {
+  color: rgba(233, 236, 245, 0.16);
 }
-.words .w > span {
-  display: inline-block;
-  transform: translateY(115%);
-  transition: transform 0.7s var(--ease-out);
-  transition-delay: var(--d, 0ms);
-}
-.words.is-visible .w > span {
-  transform: translateY(0);
-}
-
-/* Permanently "selected" text — the highlight is the emphasis */
-.hl {
-  background: var(--blue);
-  color: var(--paper);
+.pw.hl-w {
   padding: 0 0.1em;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
 }
 
 /* Blinking editing caret */
@@ -144,20 +161,36 @@ body {
   animation: blink 1.1s steps(1) infinite;
 }
 
-/* Accordion expansion for the work index */
-.acc-panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.65s var(--ease-out);
+/* Availability pulse */
+@keyframes beat {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
 }
-.acc-panel.open {
-  grid-template-rows: 1fr;
-}
-.acc-panel > div {
-  overflow: hidden;
+.beat {
+  animation: beat 2.4s ease-in-out infinite;
 }
 
-/* Underline that sweeps in from the left on hover */
+/* Scroll cue drift */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+.drift {
+  display: inline-block;
+  animation: drift 2.2s ease-in-out infinite;
+}
+
+/* Underline sweep */
 .link-rule {
   position: relative;
 }
@@ -179,27 +212,352 @@ body {
   transform-origin: left;
 }
 
-/* Availability pulse */
-@keyframes beat {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.25;
-  }
+/* Header retreats while reading, returns when summoned */
+.site-header {
+  transition: transform 0.5s var(--ease-out);
 }
-.beat {
-  animation: beat 2.4s ease-in-out infinite;
+.site-header.hidden-bar {
+  transform: translateY(-100%);
 }
 
 /* ---------------------------------------------------------------- */
-/* Reduced motion: the page arrives fully set, nothing moves.       */
+/* Glow cards (work index) — border light follows the cursor        */
+/* ---------------------------------------------------------------- */
+.glow-card {
+  position: relative;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(20, 24, 36, 0.72), rgba(13, 16, 24, 0.85));
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(91, 123, 250, 0.65),
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(91, 123, 250, 0.08),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.glow-card:hover::before,
+.glow-card:hover::after {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------- */
+/* Project mockups: each card hosts a miniature of the product.     */
+/* Elements boot in when the card enters (.is-visible), staggered   */
+/* by --i; ambient micro-loops keep the UI alive afterwards.        */
+/* ---------------------------------------------------------------- */
+.pm .in {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.55s var(--ease-out),
+    transform 0.55s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 160ms + 250ms);
+}
+.is-visible .pm .in {
+  opacity: 1;
+  transform: none;
+}
+.pm .grow {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 160ms + 450ms);
+}
+.is-visible .pm .grow {
+  transform: scaleX(var(--sx, 1));
+}
+.pm .draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.5s var(--ease-out) 0.55s;
+}
+.is-visible .pm .draw {
+  stroke-dashoffset: 0;
+}
+
+/* typing indicator */
+.pm-type span {
+  animation: pm-type 1.2s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 0.2s);
+}
+@keyframes pm-type {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+/* soft attention pulse (doc citation, live dots, seed ring) */
+.pm-pulse {
+  animation: pm-pulse 2.8s ease-in-out infinite;
+}
+@keyframes pm-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* video scrubber loop */
+.pm-progress {
+  transform-origin: left;
+  animation: pm-progress 6s linear infinite;
+}
+@keyframes pm-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* funding-bar shimmer */
+.pm-shimmer {
+  animation: pm-shimmer 3.2s ease-in-out infinite;
+}
+@keyframes pm-shimmer {
+  0% {
+    transform: translateX(-110%);
+  }
+  55%,
+  100% {
+    transform: translateX(240%);
+  }
+}
+
+/* language toggle knob EN <-> ES */
+.pm-toggle {
+  animation: pm-toggle 5.5s var(--ease-out) infinite;
+}
+@keyframes pm-toggle {
+  0%,
+  38% {
+    transform: translateX(0);
+  }
+  50%,
+  88% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Stack field: chips float scattered, then assemble under scroll.  */
+/* Outer .sf-chip is GSAP-scrubbed; this inner layer only floats,   */
+/* with amplitude damped (via --fa) as order arrives.               */
+/* ---------------------------------------------------------------- */
+.sf-float {
+  display: inline-block;
+  animation: sf-float var(--fdur, 3.4s) ease-in-out var(--fd, 0s) infinite
+    alternate;
+}
+@keyframes sf-float {
+  from {
+    transform: translateY(calc(-1 * var(--fa, 9px)));
+  }
+  to {
+    transform: translateY(var(--fa, 9px));
+  }
+}
+
+/* Tech chips (stack field) */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  background: rgba(14, 17, 24, 0.8);
+  border-radius: 9999px;
+  padding: 0.5rem 0.9rem;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s var(--ease-out);
+  will-change: transform;
+}
+.chip:hover {
+  border-color: rgba(91, 123, 250, 0.6);
+  box-shadow: 0 0 24px rgba(91, 123, 250, 0.25);
+  transform: translateY(-3px);
+}
+
+/* Terminal window */
+.term {
+  border: 1px solid var(--line);
+  background: rgba(8, 10, 15, 0.92);
+  border-radius: 12px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+.term-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  vertical-align: text-bottom;
+  background: var(--blue);
+  animation: blink 1s steps(1) infinite;
+}
+
+/* Metric mini-visualizations fire when .go lands */
+.viz-arc circle.val {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.6s var(--ease-out) 0.2s;
+}
+.go .viz-arc circle.val {
+  stroke-dashoffset: var(--target, 0);
+}
+.viz-dots rect {
+  opacity: 0.12;
+  transition: opacity 0.5s ease;
+  transition-delay: calc(var(--i, 0) * 28ms);
+}
+.go .viz-dots rect.on {
+  opacity: 1;
+}
+.viz-bars rect {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.1s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+.go .viz-bars rect {
+  transform: scaleX(1);
+}
+.viz-curve path.curve {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.5s var(--ease-out) 0.2s;
+}
+.go .viz-curve path.curve {
+  stroke-dashoffset: 0;
+}
+.viz-curve .marker {
+  opacity: 0;
+  transition: opacity 0.6s ease 1.4s;
+}
+.go .viz-curve .marker {
+  opacity: 1;
+}
+
+/* Pipeline scene: everything starts undrawn; GSAP scrubs it in */
+.pipe :is(path, rect, circle, ellipse, polyline) {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.pipe .packet,
+.pipe .pipe-glow {
+  stroke-dasharray: none;
+  stroke-dashoffset: 0;
+}
+
+/* Data packets flowing through the pipeline scene */
+.packet {
+  offset-rotate: 0deg;
+  opacity: 0;
+}
+.flow .packet {
+  animation: packet-flow 3.2s linear infinite;
+  animation-delay: var(--pd, 0s);
+}
+@keyframes packet-flow {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+/* Changelog dots pop when the scroll line reaches them */
+.clog-dot {
+  transform: translateX(-50%) scale(0.4);
+  opacity: 0.35;
+  transition:
+    transform 0.4s var(--ease-out),
+    opacity 0.4s var(--ease-out);
+}
+.clog-dot.on {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+/* Custom cursor ring */
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 95;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 1px solid rgba(91, 123, 250, 0.55);
+  border-radius: 9999px;
+  pointer-events: none;
+  transition:
+    width 0.3s var(--ease-out),
+    height 0.3s var(--ease-out),
+    margin 0.3s var(--ease-out),
+    background-color 0.3s ease,
+    opacity 0.3s ease;
+}
+.cursor-ring.is-link {
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  background: rgba(91, 123, 250, 0.12);
+}
+
+/* ---------------------------------------------------------------- */
+/* Reduced motion: everything arrives settled; JS layers bail out.  */
 /* ---------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   .reveal,
   .mask > *,
   .fade-in {
@@ -209,15 +567,67 @@ body {
     animation: none !important;
     transition: none !important;
   }
-  .words .w > span {
-    transform: none !important;
-    transition: none !important;
+  .pw {
+    color: var(--fg);
   }
   .caret,
-  .beat {
+  .beat,
+  .drift,
+  .term-caret {
     animation: none;
   }
-  .acc-panel {
+  .flow .packet {
+    animation: none;
+    opacity: 0;
+  }
+  .pm .in,
+  .pm .grow {
+    opacity: 1 !important;
+    transform: scaleX(var(--sx, 1)) !important;
+    transition: none !important;
+  }
+  .pm .in {
+    transform: none !important;
+  }
+  .pm .draw {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
+  .pm-type span,
+  .pm-pulse,
+  .pm-progress,
+  .pm-shimmer,
+  .pm-toggle,
+  .sf-float {
+    animation: none !important;
+  }
+  .viz-arc circle.val,
+  .viz-bars rect,
+  .viz-curve path.curve {
+    transition: none !important;
+  }
+  .viz-arc circle.val {
+    stroke-dashoffset: var(--target, 0) !important;
+  }
+  .viz-bars rect {
+    transform: scaleX(1) !important;
+  }
+  .viz-dots rect {
+    transition: none !important;
+  }
+  .pipe :is(path, rect, circle, ellipse, polyline) {
+    stroke-dashoffset: 0 !important;
+  }
+  .clog-dot {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
     transition: none;
+  }
+  .cursor-ring {
+    display: none;
+  }
+  .site-header {
+    transition: none;
+    transform: none !important;
   }
 }

@@ -1,15 +1,60 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import ScrollProgress from "./scroll-progress";
 
 const links = [
-  { label: "Index", href: "#index" },
-  { label: "Changelog", href: "#changelog" },
+  { label: "Work", href: "#index" },
+  { label: "Career", href: "#changelog" },
+  { label: "Stack", href: "#stack" },
   { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },
 ];
 
+/**
+ * Retreats while reading, returns on scroll-up; tracks the active
+ * section and marks it blue.
+ */
 export default function Header() {
+  const [hidden, setHidden] = useState(false);
+  const [active, setActive] = useState("");
+
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y < 120) setHidden(false);
+      else if (y > last + 6) setHidden(true);
+      else if (y < last - 6) setHidden(false);
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+    );
+    links.forEach((link) => {
+      const target = document.querySelector(link.href);
+      if (target) observer.observe(target);
+    });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-rule bg-paper/85 backdrop-blur-md">
+    <header
+      className={`site-header fixed inset-x-0 top-0 z-50 border-b border-line bg-void/75 backdrop-blur-md ${
+        hidden ? "hidden-bar" : ""
+      }`}
+    >
       <div className="flex items-center justify-between px-5 py-4 md:px-10">
         <a
           href="#top"
@@ -24,7 +69,9 @@ export default function Header() {
             <a
               key={link.href}
               href={link.href}
-              className="link-rule whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-ink-soft transition-colors duration-300 hover:text-ink"
+              className={`link-rule whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] transition-colors duration-300 ${
+                active === link.href ? "text-blue" : "text-muted hover:text-fg"
+              }`}
             >
               {link.label}
             </a>
@@ -39,7 +86,7 @@ export default function Header() {
           Contact
         </a>
 
-        <p className="hidden items-center gap-2 whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-ink-soft lg:flex">
+        <p className="hidden items-center gap-2 whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-muted lg:flex">
           <span className="beat inline-block size-1.5 rounded-full bg-blue" />
           Open to work
         </p>

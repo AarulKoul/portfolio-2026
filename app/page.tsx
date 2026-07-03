@@ -1,35 +1,32 @@
-import About from "@/components/about";
+import AboutTerminal from "@/components/about-terminal";
+import Atmosphere from "@/components/atmosphere";
+import BootIntro from "@/components/boot-intro";
 import Changelog from "@/components/changelog";
 import Contact from "@/components/contact";
+import CustomCursor from "@/components/custom-cursor";
 import Header from "@/components/header";
 import Hero from "@/components/hero";
 import Metrics from "@/components/metrics";
+import Pipeline from "@/components/pipeline";
 import Section from "@/components/section";
-import WorkIndex from "@/components/work-index";
-import Words from "@/components/words";
+import SmoothScroll from "@/components/smooth-scroll";
+import StackField from "@/components/stack-field";
+import WorkCards from "@/components/work-cards";
 
 export default function Home() {
   return (
     <>
+      <SmoothScroll />
+      <Atmosphere />
+      <CustomCursor />
+      <BootIntro />
       <Header />
-      <main>
+      <main className="relative z-10">
         <Hero />
+        <Pipeline />
 
-        <Section id="brief" index="01" label="Brief">
-          <Words
-            className="text-[clamp(1.9rem,4vw,3.6rem)] font-semibold leading-[1.08] tracking-[-0.03em]"
-            segments={[
-              { t: "I build" },
-              { t: "interfaces that ship", hl: true },
-              {
-                t: "— SaaS platforms in Next.js by trade, million-row datasets for sport. Design-grade on the surface, engineering-grade underneath.",
-              },
-            ]}
-          />
-        </Section>
-
-        <Section id="index" index="02" label="Index / Selected work">
-          <WorkIndex />
+        <Section id="index" index="02" label="Selected work">
+          <WorkCards />
         </Section>
 
         <Section id="changelog" index="03" label="Changelog / Career">
@@ -40,11 +37,17 @@ export default function Home() {
           <Metrics />
         </Section>
 
-        <Section id="about" index="05" label="About">
-          <About />
+        <Section id="stack" index="05" label="Stack">
+          <StackField />
+        </Section>
+
+        <Section id="about" index="06" label="About">
+          <AboutTerminal />
         </Section>
       </main>
-      <Contact />
+      <div className="relative z-10">
+        <Contact />
+      </div>
     </>
   );
 }
