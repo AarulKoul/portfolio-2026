@@ -18,7 +18,7 @@ export default function DecodeName() {
     const el = root.current;
     if (!el) return;
     const letters = Array.from(
-      el.querySelectorAll<HTMLSpanElement>("[data-letter]")
+      el.querySelectorAll<HTMLSpanElement>("[data-letter]"),
     );
     const finals = letters.map((l) => l.dataset.letter ?? "");
 
@@ -76,7 +76,7 @@ export default function DecodeName() {
             const rect = letter.getBoundingClientRect();
             const dist = Math.hypot(
               mouse.x - (rect.left + rect.width / 2),
-              mouse.y - (rect.top + rect.height / 2)
+              mouse.y - (rect.top + rect.height / 2),
             );
             target = 900 - Math.min(dist / reach, 1) * 620;
           } else {
@@ -125,7 +125,7 @@ export default function DecodeName() {
               </span>
             ))}
             {lineIndex === 1 && (
-              <span className="caret ml-[0.07em] inline-block h-[0.74em] w-[0.06em] bg-blue" />
+              <span className="caret ml-24 inline-block h-[0.74em] w-[0.03em] bg-blue" />
             )}
           </span>
         </span>

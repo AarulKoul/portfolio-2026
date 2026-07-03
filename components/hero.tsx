@@ -18,7 +18,7 @@ export default function Hero() {
         className="fade-in relative mb-auto grid gap-y-1 pt-4 font-mono text-[11px] uppercase tracking-[0.2em] text-muted sm:grid-cols-3"
         style={delay(700)}
       >
-        <span>Portfolio — 2026 edition</span>
+        <span>Portfolio</span>
         <span className="sm:text-center">Pixel / Pipeline</span>
         <span className="sm:text-right">{identity.location} (UTC+5:30)</span>
       </div>
